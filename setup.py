@@ -17,6 +17,7 @@ setup(
         "deepspeed",
         "idr_torch>=2.0.0",
         "mlflow",
+        "pandas",
         "torch",
         "torchmetrics",
         "tqdm",

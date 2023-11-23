@@ -3,7 +3,6 @@ from math import cos, pi
 from typing import TypeAlias
 
 import deepspeed
-from bitsandbytes.optim import Lion
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.optim import SGD, AdamW, Optimizer
 from torch.optim.lr_scheduler import LambdaLR
@@ -80,15 +79,6 @@ def get_optimizer_scheduler(
                 lr=config.lr,
                 momentum=config.sgd_momentum,
                 weight_decay=config.sgd_weight_decay,
-            )
-        case "lion":
-            optimizer = Lion(
-                params=model.parameters(),
-                lr=config.lr,
-                betas=(config.lion_beta1, config.lion_beta2),
-                weight_decay=config.lion_weight_decay,
-                optim_bits=config.lion_optim_bits,
-                is_paged=config.lion_is_paged,
             )
         case _:
             raise ValueError(f"Unknown optimizer: {config.optimizer}")

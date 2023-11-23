@@ -85,21 +85,6 @@ class TrainingConfig:
     sgd_weight_decay: float = field(
         default=0.0, metadata={"converter": float, "export": True}
     )
-    lion_beta1: float = field(
-        default=0.9, metadata={"converter": float, "export": True}
-    )
-    lion_beta2: float = field(
-        default=0.99, metadata={"converter": float, "export": True}
-    )
-    lion_weight_decay: float = field(
-        default=0.0, metadata={"converter": float, "export": True}
-    )
-    lion_optim_bits: int = field(
-        default=32, metadata={"converter": int, "export": True}
-    )
-    lion_is_paged: bool = field(
-        default=False, metadata={"converter": bool, "export": True}
-    )
     num_warmup_steps: int = field(
         default=20, metadata={"converter": int, "export": False}
     )
@@ -206,8 +191,8 @@ class TrainingConfig:
         parser.add_argument("--checkpoint", action="store_true")
         parser.add_argument(
             "--optimizer",
-            help="'adamw', 'sgd' or 'lion'",
-            choices=["adamw", "sgd", "lion"],
+            help="'adamw' or 'sgd",
+            choices=["adamw", "sgd"],
         )
         parser.add_argument("--adam-beta1", "--adam_beta1", dest="adam_beta1")
         parser.add_argument("--adam-beta2", "--adam_beta2", dest="adam_beta2")
@@ -219,15 +204,6 @@ class TrainingConfig:
         parser.add_argument(
             "--sgd-weight-decay", "--sgd_weight_decay", dest="sgd_weight_decay"
         )
-        parser.add_argument("--lion-beta1", "--lion_beta1", dest="lion_beta1")
-        parser.add_argument("--lion-beta2", "--lion_beta2", dest="lion_beta2")
-        parser.add_argument(
-            "--lion-weight-decay", "--lion_weight_decay", dest="lion_weight_decay"
-        )
-        parser.add_argument(
-            "--lion-optim-bits", "--lion_optim_bits", dest="lion_optim_bits"
-        )
-        parser.add_argument("--lion-is-paged", "--lion_is_paged", dest="lion_is_paged")
         parser.add_argument(
             "--num-warmup-steps",
             "--num_warmup_steps",
