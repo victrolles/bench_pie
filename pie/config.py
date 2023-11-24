@@ -47,7 +47,7 @@ class TrainingConfig:
         default="meta-llama/Llama-2-13b-hf", metadata={"converter": str, "export": True}
     )
     step: int = field(default=0, metadata={"converter": int, "export": False})
-    epochs: int = field(default=2, metadata={"converter": int, "export": True})
+    epochs: int = field(default=1, metadata={"converter": int, "export": True})
     lr: float = field(default=1e-05, metadata={"converter": float, "export": True})
     batch_size: int = field(default=4, metadata={"converter": int, "export": True})
     valid_batch_size: int = field(

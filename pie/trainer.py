@@ -1,3 +1,5 @@
+from time import time
+
 import mlflow
 import torch
 from torch import profiler
@@ -228,6 +230,7 @@ class Trainer:
         perplexity = self.eval_loop()
 
         for epoch in range(epochs - self.epoch + 1):
+            start_epoch = time()
             print_rank_0(
                 f"#################### Epoch {self.epoch}/{epochs} ####################"
             )
@@ -250,10 +253,13 @@ class Trainer:
                 list_loss = self.train_loop()
 
             perplexity = self.eval_loop()
-            print_rank_0(
-                f"average loss: {list_loss.mean().item()} | perplexity: {perplexity}\n"
-            )
             self.visual_test(inp_prompt, inp_tensor, label_prompt)
+
+            print_rank_0(
+                f"Epoch duration: {(time() - start_epoch):.2f}s |",
+                f"average loss: {list_loss.mean().item():.3f} |",
+                f"perplexity: {perplexity:.3f}\n"
+            )
             print_rank_0("#" * 60, "\n")
 
         if self.config.checkpoint:

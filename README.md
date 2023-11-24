@@ -34,6 +34,12 @@ You can set the paths of the model weights and the dataset on a config.json like
 
 On a cluster with slurm you can do a quick test with the following command:
 ```bash
-srun pie train -c config.json --training_dist 'fsdp' --epochs 1 \
---batch_size 1 --seq_length 1024 --debug --model_name "Llama-2-7b-hf" --epochs 1
+srun pie train -c config.json --training_dist 'fsdp' \
+--batch_size 1 --seq_length 1024 --debug --model_name "Llama-2-7b-hf"
 ```
+
+## Result on Jean Zay
+Llama 7b, deepspeed stage 3, batch size (per gpu)=1, seq_length=1024:
+Epoch duration: 841.38s | average loss: 0.531 | perplexity: 1.668
+GPU mem: 41.8GB
+
