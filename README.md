@@ -39,7 +39,10 @@ srun pie train -c config.json --training_dist 'fsdp' \
 ```
 
 ## Result on Jean Zay
-Llama 7b, deepspeed stage 3, batch size (per gpu)=1, seq_length=1024:
-Epoch duration: 841.38s | average loss: 0.531 | perplexity: 1.668
-GPU mem: 41.8GB
+Llama 7b, deepspeed stage 3, seq_length=1024:
 
+|n*GPU|batch size/gpu|Epoch duration(s)|avg loss|perplexity|GPU memory(GB)|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|4|1|841.38|0.531|1.668|41.8|
+|8|2|277.12|0.552|1.639|43.79|
+|16|4|401.65|0.653|1.645|65.59|
