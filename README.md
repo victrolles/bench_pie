@@ -32,17 +32,23 @@ You can set the paths of the model weights and the dataset on a config.json like
 }
 ```
 
-On a cluster with slurm you can do a quick test with the following command:
+On a cluster with slurm, you should always use an `ntasks-per-node` equal to the number of gpus in the node. You can do a quick test with the following command:
 ```bash
 srun pie train -c config.json --training_dist 'fsdp' \
 --batch_size 1 --seq_length 1024 --debug --model_name "Llama-2-7b-hf"
 ```
 
-## Result on Jean Zay
+## Mini-bench on Jean Zay (the result are not final)
 Llama 7b, deepspeed stage 3, seq_length=1024:
-
 |n*GPU|batch size/gpu|Epoch duration(s)|avg loss|perplexity|GPU memory(GB)|
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |4|1|841.38|0.531|1.668|41.8|
 |8|2|277.12|0.552|1.639|43.79|
 |16|4|401.65|0.653|1.645|65.59|
+---
+Llama 7b, fsdp, seq_length=1024:
+|n*GPU|batch size/gpu|Epoch duration(s)|avg loss|perplexity|GPU memory(GB)|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|4|1|552.45|0.584|1.657|24.28|
+|8|2|218.51|0.650|1.700|33.55|
+|16|4|457.10|0.785|1.802|59.09|
