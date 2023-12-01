@@ -185,7 +185,7 @@ class Trainer:
                 self.prof.step()
 
             if (
-                (i == 75 and self.config.debug)
+                (i == 20 and self.config.debug)
                 or (i == self.config.total_train_step_per_epoch + 1 - initial_iter_loop)
             ):
                 loop.close()
@@ -198,7 +198,7 @@ class Trainer:
             self.config.step += 1
 
         # tokens/second/gpu = (seq/iter/gpu) * (tokens/seq) / (iter/second)
-        train_tokens_s = inputs_shape[0] * inputs_shape[1] / mean(train_list_time_iter[:25])
+        train_tokens_s = inputs_shape[0] * inputs_shape[1] / mean(train_list_time_iter)
         print(f"Train token per second of GPU n°{idr_torch.rank}: {train_tokens_s:.1f}")
         tensor_train_tokens_s = torch.tensor(train_tokens_s, device=self.device)
         # Sum the throughput of all GPUs
@@ -239,13 +239,13 @@ class Trainer:
                     perplexity=score.item(),
                 )
 
-                if i == 75 and self.config.debug:
+                if i == 20 and self.config.debug:
                     loop.close()
                     break
 
             perplexity = self.metric.compute().item()
 
-            val_tokens_s = mean(list_tokens_s_per_gpu[:25])
+            val_tokens_s = mean(list_tokens_s_per_gpu)
             print(f"Inference token per second of GPU n°{idr_torch.rank}: {val_tokens_s:.1f}")
             tensor_val_tokens_s = torch.tensor(val_tokens_s, device=self.device)
             dist.all_reduce(tensor_val_tokens_s, op=dist.ReduceOp.SUM)
@@ -296,7 +296,6 @@ class Trainer:
             print_rank_0("#" * 60, "\n")
 
         if idr_torch.rank==0:
-
             print(
                 f"\n------------------- results benckmarks -------------------",
                 f"\nGPU type : {torch.cuda.get_device_name(self.device)}",
@@ -315,27 +314,7 @@ class Trainer:
                 f"\nGlobal Max Memory Reserved : {round(torch.cuda.max_memory_reserved(self.device)/2**30, 2):.2f}",
                 f"\nAverage loss : {list_loss.mean().item():.3f}",
                 f"\nPerplexity : {perplexity}",
-                f"\n----------------------------------------------------------\n")
-
-            with open("../../bench_pie.csv",'a') as file:
-                writer=csv.writer(file)
-                # typeGPU,nbrGPU,model_name,training_dist,stage,batch_size,valid_batch_size,seq_length,nb_layer_freezed,epoch_duration,train_tokens_s,val_tokens_s,maxMemAlloc,maxMemRes,mean_loss,perplexity
-                writer.writerow([torch.cuda.get_device_name(self.device),
-                                idr_torch.size,
-                                self.config.model_name,
-                                self.config.training_dist,
-                                self.config.stage,
-                                self.config.batch_size,
-                                self.config.valid_batch_size,
-                                self.config.seq_length,
-                                self.config.nb_layer_freezed,
-                                (time() - start_epoch),
-                                self.train_tokens_s,
-                                self.val_tokens_s,
-                                round(torch.cuda.max_memory_allocated(self.device)/2**30, 2),
-                                round(torch.cuda.max_memory_reserved(self.device)/2**30, 2),
-                                list_loss.mean().item(),
-                                perplexity])   
+                f"\n----------------------------------------------------------\n")  
 
         if self.config.checkpoint:
             save_checkpoints(self.config, self.model, self.optimizer, self.lr_scheduler)

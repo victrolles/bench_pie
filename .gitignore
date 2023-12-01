@@ -1,8 +1,10 @@
 config.json
-test.ipynb
 slurm
-launcher.ipynb
+benches
 .local
 .ipynb_checkpoints
 __pycache__
 pie.egg-info
+
+*.ipynb
+*.csv
