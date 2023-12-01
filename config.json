@@ -1,0 +1,4 @@
+{
+	"model_dir": "/gpfsdswork/dataset/HuggingFace_Models/",
+	"csv_data_path": "/gpfsdswork/dataset/HuggingFace/bitext/Bitext-customer-support-llm-chatbot-training-dataset/Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv"
+}
