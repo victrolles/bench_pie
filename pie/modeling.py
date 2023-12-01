@@ -101,6 +101,7 @@ def get_ds_model(
     deepspeed.init_distributed(
         dist_backend="nccl",
         init_method="env://",
+        distributed_port = idr_torch.master_port
     )
 
     ds_config = get_ds_config(config)
