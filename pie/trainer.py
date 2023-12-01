@@ -198,7 +198,7 @@ class Trainer:
             self.config.step += 1
 
         # tokens/second/gpu = (seq/iter/gpu) * (tokens/seq) / (iter/second)
-        train_tokens_s = inputs_shape[0] * inputs_shape[1] / mean(train_list_time_iter[:25])
+        train_tokens_s = inputs_shape[0] * inputs_shape[1] / mean(train_list_time_iter[25:])
         print(f"Train token per second of GPU n°{idr_torch.rank}: {train_tokens_s:.1f}")
         tensor_train_tokens_s = torch.tensor(train_tokens_s, device=self.device)
         # Sum the throughput of all GPUs
@@ -245,7 +245,7 @@ class Trainer:
 
             perplexity = self.metric.compute().item()
 
-            val_tokens_s = mean(list_tokens_s_per_gpu[:25])
+            val_tokens_s = mean(list_tokens_s_per_gpu[25:])
             print(f"Inference token per second of GPU n°{idr_torch.rank}: {val_tokens_s:.1f}")
             tensor_val_tokens_s = torch.tensor(val_tokens_s, device=self.device)
             dist.all_reduce(tensor_val_tokens_s, op=dist.ReduceOp.SUM)
