@@ -38,17 +38,29 @@ srun pie train -c config.json --training_dist 'fsdp' \
 --batch_size 1 --seq_length 1024 --debug --model_name "Llama-2-7b-hf"
 ```
 
-## Mini-bench on Jean Zay (the result are not final)
-Llama 7b, deepspeed stage 3, seq_length=1024:
-|n*GPU|batch size/gpu|Epoch duration(s)|avg loss|perplexity|GPU memory(GB)|
-|:---:|:---:|:---:|:---:|:---:|:---:|
-|4|1|841.38|0.531|1.668|41.8|
-|8|2|277.12|0.552|1.639|43.79|
-|16|4|401.65|0.653|1.645|65.59|
+## Benchmarks on Jean-Zay
+Hyperparameters :
+ - Max Sequence Length = 1024
+ - No layer freezed
+ - No PEFT
+#### Llama 7b :
+|n*GPU|Optimized DDP|ZeRO stage|Batch size/gpu|Epoch duration (s)|Training tokens/s|Inference tokens/s|GPU memory allocated(GB)|Avg loss|perplexity|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|4|deepspeed|2|1|795.85|5679|20768|50.91|0.53|1.67|
+|8|deepspeed|2|2|250.64|18739|49488|50.44|0.55|1.64|
+|16|deepspeed|3|4|583.83*|15446*|12441|65.59|0.65|1.65|
+|4|fsdp|/|3|400.43*|15027*|23347|52.12|0.63|1.69|
+|8|fsdp|/|3|203.00|30078|42023|47.41|0.68|1.72|
+|16|fsdp|/|4|602.96|13876|13166|59.10|0.78|1.80|
 ---
-Llama 7b, fsdp, seq_length=1024:
-|n*GPU|batch size/gpu|Epoch duration(s)|avg loss|perplexity|GPU memory(GB)|
-|:---:|:---:|:---:|:---:|:---:|:---:|
-|4|1|552.45|0.584|1.657|24.28|
-|8|2|218.51|0.650|1.700|33.55|
-|16|4|457.10|0.785|1.802|59.09|
+#### Llama 13b :
+|n*GPU|Optimized DDP|ZeRO stage|Batch size/gpu|Epoch duration (s)|Training tokens/s|Inference tokens/s|GPU memory allocated(GB)|Avg loss|perplexity|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|8|deepspeed|3|1|818.79|5999|7226|48.51|0.52|1.64|
+|16|deepspeed|3|2|1517.03|4430|2958|58.93|0.57|1.62|
+|4|fsdp|/|1|984.05|6223|5984|41.14|0.56|1.63|
+|8|fsdp|/|2|382.03|15294|19318|53.70|0.62|1.66|
+|16|fsdp|/|2|1323.93|5397**|3556**|49.15|0.67|1.70|
+---
+\* Two configs can have similar training throughput but different epoch duration because the throughput only takes in account, in an iteration, the delta time between the loading of data and the optimizer step whereas the epoch duration which also takes in account an inference part containing the evaluation loop and a test of generating texts.
+</br>** The training throughput can be faster than the evaluation throughput because the training only deals with batch size with a length of 1024 whereas the evaluation throughput which deals with, in average, shorter sequence length (e.g. : ~256) so the batch size is less optimized.
