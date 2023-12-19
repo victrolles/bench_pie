@@ -66,5 +66,5 @@ Hyperparameters :
 |8|fsdp|/|2|399.42|13531|19310|53.71|0.62|1.66|
 |16|fsdp|/|2|1985.68|3707|2378|49.15|0.67|1.70|
 ---
-\* Two configs can have the same training throughput but different epoch duration because the throughput only takes in account, in an iteration, the delta time between the loading of data and the optimizer step whereas the epoch duration which also takes in account an inference part containing the evaluation loop and a test of generating texts.
+\* Two configurations can have the same training throughput but different epoch durations because the throughput only takes into account, in an iteration, the delta time between the loading of data and the optimizer step, whereas the epoch duration also takes into account an inference part containing the evaluation loop and a test of generating texts.
 </br>** The training throughput can be faster than the evaluation throughput because the training only deals with batch size with a length of 1024 whereas the evaluation throughput which deals with, in average, shorter sequence length (e.g. : ~256) so the batch size is less optimized.
